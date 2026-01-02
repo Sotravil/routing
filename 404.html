@@ -2,80 +2,281 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>404 — Route Not Found</title>
+<title>Redirecting...</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-  /* ===============================
-     BASE RESET
-  =============================== */
   * {
     box-sizing: border-box;
+    margin: 0;
+    padding: 0;
   }
 
   body {
     margin: 0;
     height: 100vh;
-    font-family: system-ui, sans-serif;
-    background: radial-gradient(circle at top, #151923, #0b0e13);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #0f1419 0%, #1a1f2e 50%, #0a0e1a 100%);
     color: #eaeaea;
     display: flex;
     align-items: center;
     justify-content: center;
+    overflow: hidden;
+    position: relative;
   }
 
-  /* ===============================
-     CONTAINER
-  =============================== */
+  /* Animated background particles */
+  .particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+  }
+
+  .particle {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: rgba(138, 180, 255, 0.5);
+    border-radius: 50%;
+    animation: float linear infinite;
+  }
+
+  @keyframes float {
+    0% {
+      transform: translateY(100vh) translateX(0);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-100vh) translateX(100px);
+      opacity: 0;
+    }
+  }
+
   .container {
     text-align: center;
-    padding: 40px;
-    max-width: 520px;
+    padding: 50px 40px;
+    max-width: 580px;
+    background: rgba(20, 25, 35, 0.8);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(138, 180, 255, 0.1);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+    position: relative;
     animation: fadeIn 0.6s ease-out;
   }
 
-  /* ===============================
-     TEXT STYLES
-  =============================== */
-  h1 {
-    font-size: 3rem;
-    margin-bottom: 12px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-  }
-
-  p {
-    font-size: 1.1rem;
-    color: #b7c0d8;
-    margin-bottom: 28px;
-  }
-
-  /* ===============================
-     LINK
-  =============================== */
-  a {
-    color: #5ea2ff;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-
-  a:hover {
-    opacity: 0.85;
-  }
-
-  /* ===============================
-     ANIMATION
-  =============================== */
   @keyframes fadeIn {
     from {
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(20px);
     }
     to {
       opacity: 1;
       transform: translateY(0);
+    }
+  }
+
+  .icon-wrapper {
+    margin-bottom: 24px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .spinner-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    margin: 0 auto;
+  }
+
+  .spinner {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 3px solid rgba(138, 180, 255, 0.1);
+    border-radius: 50%;
+  }
+
+  .spinner-inner {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    border: 3px solid transparent;
+    border-top-color: #8ab4ff;
+    border-right-color: #8ab4ff;
+    border-radius: 50%;
+    animation: spin 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  }
+
+  .spinner-inner-2 {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    top: 10px;
+    left: 10px;
+    border: 3px solid transparent;
+    border-left-color: #5a8fff;
+    border-bottom-color: #5a8fff;
+    border-radius: 50%;
+    animation: spin 1.5s cubic-bezier(0.5, 0, 0.5, 1) infinite reverse;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  h1 {
+    font-size: 2.2rem;
+    margin: 24px 0 12px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #8ab4ff 0%, #5a8fff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+  }
+
+  .subtitle {
+    font-size: 1.05rem;
+    color: #b7c0d8;
+    margin-bottom: 28px;
+    line-height: 1.6;
+  }
+
+  .countdown {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.95rem;
+    color: #8ab4ff;
+    background: rgba(138, 180, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    font-weight: 500;
+  }
+
+  .countdown-number {
+    font-size: 1.3rem;
+    font-weight: 700;
+    min-width: 24px;
+    display: inline-block;
+  }
+
+  .progress-bar-container {
+    width: 100%;
+    height: 4px;
+    background: rgba(138, 180, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 24px 0;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #5a8fff 0%, #8ab4ff 100%);
+    border-radius: 4px;
+    animation: progress 3s linear forwards;
+    box-shadow: 0 0 10px rgba(138, 180, 255, 0.5);
+  }
+
+  @keyframes progress {
+    from { width: 0%; }
+    to { width: 100%; }
+  }
+
+  .destination {
+    font-size: 0.85rem;
+    color: #7a8aa8;
+    margin-top: 20px;
+    padding: 12px;
+    background: rgba(10, 15, 25, 0.5);
+    border-radius: 8px;
+    border-left: 3px solid #8ab4ff;
+    word-break: break-all;
+  }
+
+  .manual-link {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 12px 28px;
+    background: linear-gradient(135deg, #5a8fff 0%, #8ab4ff 100%);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(90, 143, 255, 0.3);
+    opacity: 0;
+    animation: fadeInLink 0.5s ease-out 1s forwards;
+  }
+
+  @keyframes fadeInLink {
+    to {
+      opacity: 1;
+    }
+  }
+
+  .manual-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(90, 143, 255, 0.5);
+  }
+
+  .manual-link:active {
+    transform: translateY(0);
+  }
+
+  @media (max-width: 600px) {
+    .container {
+      margin: 20px;
+      padding: 40px 30px;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+    }
+
+    .spinner-container {
+      width: 60px;
+      height: 60px;
+    }
+
+    .spinner,
+    .spinner-inner {
+      width: 60px;
+      height: 60px;
+    }
+
+    .spinner-inner-2 {
+      width: 45px;
+      height: 45px;
+      top: 7.5px;
+      left: 7.5px;
     }
   }
 </style>
@@ -83,136 +284,107 @@
 
 <body>
 
-<div class="container">
-  <h1>This route doesn’t exist</h1>
-  <p>The page you’re trying to reach is not available or was moved.</p>
+<!-- Animated particles background -->
+<div class="particles" id="particles"></div>
 
-  <a onclick="goHome()">Go back home</a>
+<div class="container">
+  <div class="icon-wrapper">
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <div class="spinner-inner"></div>
+      <div class="spinner-inner-2"></div>
+    </div>
+  </div>
+
+  <h1>Redirecting</h1>
+  <p class="subtitle">Preparing your page, please wait a moment</p>
+  
+  <div class="countdown">
+    <span>Redirecting in</span>
+    <span class="countdown-number" id="countdown">3</span>
+    <span>seconds</span>
+  </div>
+
+  <div class="progress-bar-container">
+    <div class="progress-bar"></div>
+  </div>
+
+  <div class="destination" id="destination">
+    Destination: <strong id="dest-path">Loading...</strong>
+  </div>
+
+  <a href="#" class="manual-link" id="manual-link">
+    Click here if not redirected
+  </a>
 </div>
 
 <script>
 /* ======================================================
-   SPA ROUTE RECOVERY + HOME NAVIGATION
+   GITHUB PAGES SPA REDIRECT FIX
+   This must match the BASE_PATH in index.html
 ====================================================== */
 
-// Save the attempted path so index.html can restore it if needed
-if (!sessionStorage.redirect) {
-  sessionStorage.redirect = location.pathname;
+// CHANGE THIS if repo name changes (must match index.html)
+const BASE_PATH = '/routing';
+
+// Create animated particles
+function createParticles() {
+  const particlesContainer = document.getElementById('particles');
+  const particleCount = 30;
+
+  for (let i = 0; i < particleCount; i++) {
+    const particle = document.createElement('div');
+    particle.className = 'particle';
+    particle.style.left = Math.random() * 100 + '%';
+    particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+    particle.style.animationDelay = Math.random() * 5 + 's';
+    particle.style.width = particle.style.height = (Math.random() * 3 + 1) + 'px';
+    particlesContainer.appendChild(particle);
+  }
 }
 
-// Navigate back to SPA entry point
-function goHome() {
-  location.replace('/');
-}
-</script>
+// Initialize
+createParticles();
 
-</body>
-</html><!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>404 — Route Not Found</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+// Save the full attempted path (pathname + search + hash) for index.html to restore
+const fullPath = location.pathname + location.search + location.hash;
+sessionStorage.redirect = fullPath;
 
-<style>
-  /* ===============================
-     BASE RESET
-  =============================== */
-  * {
-    box-sizing: border-box;
+// Update destination display
+const destPath = document.getElementById('dest-path');
+const redirectUrl = BASE_PATH + '/';
+destPath.textContent = redirectUrl;
+
+// Setup manual link
+const manualLink = document.getElementById('manual-link');
+manualLink.href = redirectUrl;
+
+// Countdown timer
+let timeLeft = 3;
+const countdownEl = document.getElementById('countdown');
+
+const countdownInterval = setInterval(() => {
+  timeLeft--;
+  if (timeLeft > 0) {
+    countdownEl.textContent = timeLeft;
+  } else {
+    clearInterval(countdownInterval);
   }
+}, 1000);
 
-  body {
-    margin: 0;
-    height: 100vh;
-    font-family: system-ui, sans-serif;
-    background: radial-gradient(circle at top, #151923, #0b0e13);
-    color: #eaeaea;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+// Redirect after 3 seconds for better UX
+setTimeout(() => {
+  location.replace(redirectUrl);
+}, 3000);
+
+// Error handling - if redirect fails, show message
+setTimeout(() => {
+  if (document.visibilityState === 'visible') {
+    const subtitle = document.querySelector('.subtitle');
+    subtitle.textContent = 'Taking longer than expected? Try the link below.';
+    subtitle.style.color = '#ffb86c';
   }
-
-  /* ===============================
-     CONTAINER
-  =============================== */
-  .container {
-    text-align: center;
-    padding: 40px;
-    max-width: 520px;
-    animation: fadeIn 0.6s ease-out;
-  }
-
-  /* ===============================
-     TEXT STYLES
-  =============================== */
-  h1 {
-    font-size: 3rem;
-    margin-bottom: 12px;
-    font-weight: 800;
-    letter-spacing: -0.03em;
-  }
-
-  p {
-    font-size: 1.1rem;
-    color: #b7c0d8;
-    margin-bottom: 28px;
-  }
-
-  /* ===============================
-     LINK
-  =============================== */
-  a {
-    color: #5ea2ff;
-    font-size: 1.1rem;
-    font-weight: 600;
-    text-decoration: underline;
-    cursor: pointer;
-  }
-
-  a:hover {
-    opacity: 0.85;
-  }
-
-  /* ===============================
-     ANIMATION
-  =============================== */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-</style>
-</head>
-
-<body>
-
-<div class="container">
-  <h1>This route doesn’t exist</h1>
-  <p>The page you’re trying to reach is not available or was moved.</p>
-
-  <a onclick="goHome()">Go back home</a>
-</div>
-
-<script>
-/* ======================================================
-   SPA ROUTE RECOVERY + HOME NAVIGATION
-====================================================== */
-
-// Save the attempted path so index.html can restore it if needed
-if (!sessionStorage.redirect) {
-  sessionStorage.redirect = location.pathname;
-}
-
-// Navigate back to SPA entry point
-function goHome() {
-  location.replace('/');
-}
+}, 5000);
 </script>
 
 </body>
