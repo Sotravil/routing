@@ -2,10 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>SPA Shareable Routing Demo</title>
+<title>Advanced SPA Routing Test Suite</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+  * { box-sizing: border-box; }
+  
   body {
     margin: 0;
     font-family: system-ui, sans-serif;
@@ -19,6 +21,8 @@
     padding: 14px;
     background: #161a22;
     border-bottom: 1px solid #222;
+    flex-wrap: wrap;
+    align-items: center;
   }
 
   nav a {
@@ -32,8 +36,18 @@
     text-decoration: underline;
   }
 
+  nav .user-info {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.9rem;
+  }
+
   #app {
     padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
 
   .card {
@@ -41,6 +55,7 @@
     padding: 18px;
     border-radius: 12px;
     margin-bottom: 16px;
+    position: relative;
   }
 
   .meta {
@@ -55,6 +70,7 @@
     border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
+    color: #000;
   }
 
   button.secondary {
@@ -62,8 +78,208 @@
     color: #ddd;
   }
 
+  button.danger {
+    background: #dc2626;
+    color: #fff;
+  }
+
   button:hover {
     opacity: 0.9;
+  }
+
+  button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  /* FORMS */
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  input, textarea, select {
+    background: #0f1115;
+    border: 1px solid #2a2f3a;
+    color: #eaeaea;
+    padding: 10px;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: #8ab4ff;
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: -8px;
+  }
+
+  .error {
+    color: #ff6b6b;
+    font-size: 0.85rem;
+    margin-top: -8px;
+  }
+
+  /* SEARCH */
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .search-bar input {
+    flex: 1;
+  }
+
+  /* FILTERS */
+  .filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .filter-chip {
+    padding: 6px 12px;
+    background: #2a2f3a;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.85rem;
+  }
+
+  .filter-chip.active {
+    background: #8ab4ff;
+    color: #000;
+  }
+
+  /* PAGINATION */
+  .pagination {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 20px;
+  }
+
+  .pagination button {
+    min-width: 36px;
+  }
+
+  .pagination button.active {
+    background: #5e85d8;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid #2a2f3a;
+    margin-bottom: 20px;
+  }
+
+  .tab {
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    font-weight: 600;
+  }
+
+  .tab.active {
+    border-bottom-color: #8ab4ff;
+    color: #8ab4ff;
+  }
+
+  /* BREADCRUMBS */
+  .breadcrumbs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+  }
+
+  .breadcrumbs a {
+    color: #8ab4ff;
+    cursor: pointer;
+  }
+
+  .breadcrumbs span {
+    color: #666;
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+
+  .modal {
+    background: #161a22;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .modal-close {
+    background: none;
+    color: #999;
+    font-size: 1.5rem;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+  }
+
+  /* LOADING */
+  .spinner {
+    border: 3px solid #2a2f3a;
+    border-top: 3px solid #8ab4ff;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  .loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(15, 17, 21, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
   }
 
   /* TOAST */
@@ -88,6 +304,11 @@
     opacity: 1;
     transform: translateX(-50%) translateY(-6px);
   }
+
+  /* UTILITY */
+  .flex { display: flex; gap: 10px; flex-wrap: wrap; }
+  .mt-2 { margin-top: 20px; }
+  code { background: #0f1115; padding: 2px 6px; border-radius: 4px; }
 </style>
 </head>
 
@@ -96,12 +317,20 @@
 <nav>
   <a onclick="go('/')">Home</a>
   <a onclick="go('/feed')">Feed</a>
-  <a onclick="go('/group/devs')">Group</a>
+  <a onclick="go('/search')">Search</a>
+  <a onclick="go('/group/devs')">Groups</a>
   <a onclick="go('/profile/sotravil')">Profile</a>
+  <a onclick="go('/settings')">Settings</a>
+  <div class="user-info">
+    <span id="nav-user"></span>
+    <a id="nav-auth" onclick="handleAuthClick()"></a>
+  </div>
 </nav>
 
 <div id="app"></div>
 <div id="toast"></div>
+<div id="modal-container"></div>
+<div id="loading-container"></div>
 
 <script>
 /* ======================================================
@@ -120,20 +349,167 @@ function go(path) {
   render();
 }
 
+function updateQueryParam(key, value) {
+  const url = new URL(location.href);
+  if (value === null || value === undefined || value === '') {
+    url.searchParams.delete(key);
+  } else {
+    url.searchParams.set(key, value);
+  }
+  history.pushState({}, '', url.pathname + url.search);
+  render();
+}
+
+function getQueryParams() {
+  return Object.fromEntries(new URLSearchParams(location.search));
+}
+
+function getQueryParam(key, defaultValue = null) {
+  return new URLSearchParams(location.search).get(key) || defaultValue;
+}
+
 window.addEventListener('popstate', render);
 
 /* ======================================================
-   DATA (mock, for testing richness)
+   STATE & DATA
 ====================================================== */
 
-const posts = {
-  abc123: { title: "Hello World", body: "This post is addressable by URL." },
-  xyz789: { title: "Pure SPA Routing", body: "Share links work without backend." }
-};
+let currentUser = null;
+let loadingState = false;
 
-const groups = {
-  devs: { name: "Developers", members: 42 }
-};
+// Load/save from localStorage
+function loadData() {
+  const saved = localStorage.getItem('spa-test-data');
+  if (saved) {
+    try {
+      const data = JSON.parse(saved);
+      return data;
+    } catch(e) {}
+  }
+  return getDefaultData();
+}
+
+function saveData() {
+  localStorage.setItem('spa-test-data', JSON.stringify({posts, groups, comments}));
+}
+
+function getDefaultData() {
+  return {
+    posts: {
+      abc123: { 
+        id: 'abc123',
+        title: "Hello World", 
+        body: "This post is addressable by URL.",
+        author: "sotravil",
+        tags: ["intro", "test"],
+        date: "2026-01-01",
+        views: 42
+      },
+      xyz789: { 
+        id: 'xyz789',
+        title: "Pure SPA Routing", 
+        body: "Share links work without backend.",
+        author: "admin",
+        tags: ["routing", "spa"],
+        date: "2026-01-02",
+        views: 128
+      },
+      def456: {
+        id: 'def456',
+        title: "Testing Special Chars: @#$%",
+        body: "This tests URL encoding with special characters!",
+        author: "sotravil",
+        tags: ["test", "edge-case"],
+        date: "2026-01-03",
+        views: 15
+      },
+      ghi789: {
+        id: 'ghi789',
+        title: "Pagination Test Post",
+        body: "This helps test pagination functionality.",
+        author: "testuser",
+        tags: ["test"],
+        date: "2026-01-04",
+        views: 89
+      },
+      jkl012: {
+        id: 'jkl012',
+        title: "Query Parameters Demo",
+        body: "Demonstrates filtering and sorting with URL params.",
+        author: "admin",
+        tags: ["routing", "demo"],
+        date: "2026-01-05",
+        views: 203
+      }
+    },
+    groups: {
+      devs: { name: "Developers", members: 42, description: "For developers" },
+      designers: { name: "Designers", members: 28, description: "For creative minds" },
+      testers: { name: "QA Testers", members: 15, description: "Breaking things professionally" }
+    },
+    comments: {
+      abc123: [
+        { id: 'c1', author: 'admin', text: 'Great post!', date: '2026-01-01' },
+        { id: 'c2', author: 'testuser', text: 'Very helpful', date: '2026-01-02' }
+      ]
+    }
+  };
+}
+
+let data = loadData();
+let posts = data.posts || getDefaultData().posts;
+let groups = data.groups || getDefaultData().groups;
+let comments = data.comments || getDefaultData().comments;
+
+// Auth state
+function loadAuth() {
+  currentUser = localStorage.getItem('spa-test-user');
+  updateNavAuth();
+}
+
+function login(username) {
+  currentUser = username;
+  localStorage.setItem('spa-test-user', username);
+  updateNavAuth();
+  showToast(`Logged in as ${username}`);
+}
+
+function logout() {
+  currentUser = null;
+  localStorage.removeItem('spa-test-user');
+  updateNavAuth();
+  showToast('Logged out');
+  go('/');
+}
+
+function updateNavAuth() {
+  const userEl = document.getElementById('nav-user');
+  const authEl = document.getElementById('nav-auth');
+  if (currentUser) {
+    userEl.textContent = `👤 ${currentUser}`;
+    authEl.textContent = 'Logout';
+  } else {
+    userEl.textContent = '';
+    authEl.textContent = 'Login';
+  }
+}
+
+function handleAuthClick() {
+  if (currentUser) {
+    logout();
+  } else {
+    go('/login');
+  }
+}
+
+function requireAuth() {
+  if (!currentUser) {
+    showToast('Please login first');
+    go('/login?redirect=' + encodeURIComponent(location.pathname + location.search));
+    return false;
+  }
+  return true;
+}
 
 /* ======================================================
    TOAST SYSTEM
@@ -147,6 +523,55 @@ function showToast(msg) {
   t.classList.add('show');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+/* ======================================================
+   LOADING & MODAL
+====================================================== */
+
+function showLoading() {
+  loadingState = true;
+  document.getElementById('loading-container').innerHTML = `
+    <div class="loading-overlay">
+      <div class="spinner"></div>
+    </div>
+  `;
+}
+
+function hideLoading() {
+  loadingState = false;
+  document.getElementById('loading-container').innerHTML = '';
+}
+
+function simulateAsync(callback, duration = 800) {
+  showLoading();
+  setTimeout(() => {
+    hideLoading();
+    callback();
+  }, duration);
+}
+
+function showModal(content) {
+  document.getElementById('modal-container').innerHTML = `
+    <div class="modal-overlay" onclick="closeModal(event)">
+      <div class="modal" onclick="event.stopPropagation()">
+        ${content}
+      </div>
+    </div>
+  `;
+}
+
+function closeModal(event) {
+  if (event) event.stopPropagation();
+  document.getElementById('modal-container').innerHTML = '';
+  // Remove modal query param if present
+  const params = getQueryParams();
+  if (params.modal) {
+    delete params.modal;
+    const newQuery = new URLSearchParams(params).toString();
+    const newUrl = location.pathname + (newQuery ? '?' + newQuery : '');
+    history.pushState({}, '', BASE_PATH + newUrl.replace(BASE_PATH, ''));
+  }
 }
 
 /* ======================================================
@@ -251,11 +676,139 @@ function NotFound() {
 }
 
 /* ======================================================
+   EVENT HANDLERS
+====================================================== */
+
+function handleLogin(e) {
+  e.preventDefault();
+  const username = e.target.username.value;
+  const redirect = e.target.redirect.value;
+  login(username);
+  simulateAsync(() => {
+    go(redirect);
+  }, 600);
+}
+
+function handlePostSubmit(e, editId) {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const title = formData.get('title');
+  const body = formData.get('body');
+  const tagsStr = formData.get('tags');
+  const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [];
+  
+  if (!title || !body) {
+    showToast('Title and body are required');
+    return;
+  }
+  
+  simulateAsync(() => {
+    if (editId) {
+      // Update existing post
+      posts[editId] = {...posts[editId], title, body, tags};
+      showToast('Post updated!');
+      saveData();
+      go(`/post/${editId}`);
+    } else {
+      // Create new post
+      const id = 'post_' + Date.now();
+      posts[id] = {
+        id,
+        title,
+        body,
+        tags,
+        author: currentUser,
+        date: new Date().toISOString().split('T')[0],
+        views: 0
+      };
+      showToast('Post created!');
+      saveData();
+      go(`/post/${id}`);
+    }
+  }, 800);
+}
+
+function deletePost(id) {
+  if (!confirm('Delete this post?')) return;
+  
+  simulateAsync(() => {
+    delete posts[id];
+    delete comments[id];
+    saveData();
+    showToast('Post deleted');
+    go('/feed');
+  }, 500);
+}
+
+function handleJoinGroup(name) {
+  if (!requireAuth()) return;
+  simulateAsync(() => {
+    go(`/group/${name}/join`);
+  }, 600);
+}
+
+function exportData() {
+  const data = JSON.stringify({posts, groups, comments}, null, 2);
+  const blob = new Blob([data], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'spa-test-data.json';
+  a.click();
+  showToast('Data exported');
+}
+
+/* ======================================================
    ROUTE MATCHER (BASE-AWARE)
 ====================================================== */
 
 function render() {
   const app = document.getElementById('app');
+  const modalContainer = document.getElementById('modal-container');
+
+  // Handle modals via query params
+  const modalType = getQueryParam('modal');
+  if (modalType === 'create' && currentUser) {
+    showModal(`
+      <div class="modal-header">
+        <h3>Create New Post</h3>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <form onsubmit="handlePostSubmit(event, null); closeModal();">
+        <label>Title *</label>
+        <input type="text" name="title" required placeholder="Enter post title">
+        
+        <label>Body *</label>
+        <textarea name="body" required rows="4" placeholder="Enter post content"></textarea>
+        
+        <label>Tags (comma-separated)</label>
+        <input type="text" name="tags" placeholder="e.g., javascript, tutorial">
+        
+        <div class="flex">
+          <button type="submit">Create Post</button>
+          <button type="button" class="secondary" onclick="closeModal()">Cancel</button>
+        </div>
+      </form>
+    `);
+  } else if (modalType === 'comment') {
+    const pathParts = location.pathname.replace(BASE_PATH, '').split('/').filter(Boolean);
+    const postId = pathParts[1];
+    showModal(`
+      <div class="modal-header">
+        <h3>Add Comment</h3>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <form onsubmit="event.preventDefault(); handleAddComment('${postId}', this.comment.value); closeModal();">
+        <label>Comment</label>
+        <textarea name="comment" required rows="3" placeholder="Write your comment..."></textarea>
+        
+        <div class="flex">
+          <button type="submit">Post Comment</button>
+          <button type="button" class="secondary" onclick="closeModal()">Cancel</button>
+        </div>
+      </form>
+    `);
+  }
 
   // Remove base path before routing
   const cleanPath = location.pathname
@@ -267,6 +820,11 @@ function render() {
 
   if (cleanPath.length === 0) html = Home();
   else if (cleanPath[0] === 'feed') html = Feed();
+  else if (cleanPath[0] === 'search') html = SearchView();
+  else if (cleanPath[0] === 'login') html = Login();
+  else if (cleanPath[0] === 'settings') html = Settings();
+  else if (cleanPath[0] === 'post' && cleanPath[1] === 'new') html = PostForm();
+  else if (cleanPath[0] === 'post' && cleanPath[2] === 'edit') html = PostForm(cleanPath[1]);
   else if (cleanPath[0] === 'post') html = PostView(cleanPath[1]);
   else if (cleanPath[0] === 'group' && cleanPath[2] === 'join') html = JoinGroup(cleanPath[1]);
   else if (cleanPath[0] === 'group') html = GroupView(cleanPath[1]);
@@ -274,6 +832,24 @@ function render() {
   else html = NotFound();
 
   app.innerHTML = html;
+  updateNavAuth();
+}
+
+function handleAddComment(postId, text) {
+  if (!text.trim()) return;
+  
+  if (!comments[postId]) comments[postId] = [];
+  
+  comments[postId].push({
+    id: 'c_' + Date.now(),
+    author: currentUser,
+    text: text.trim(),
+    date: new Date().toISOString().split('T')[0]
+  });
+  
+  saveData();
+  showToast('Comment added');
+  render();
 }
 
 /* ======================================================
@@ -290,6 +866,7 @@ if (redirect) {
    INIT
 ====================================================== */
 
+loadAuth();
 render();
 </script>
 
