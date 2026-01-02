@@ -25,7 +25,7 @@
     color: #8ab4ff;
     cursor: pointer;
     text-decoration: none;
-    font-weight: 500;
+    font-weight: 600;
   }
 
   nav a:hover {
@@ -38,16 +38,21 @@
 
   .card {
     background: #161a22;
-    padding: 16px;
-    border-radius: 10px;
-    margin-bottom: 14px;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+  }
+
+  .meta {
+    font-size: 0.85rem;
+    color: #9aa3b2;
   }
 
   button {
     background: #8ab4ff;
     border: none;
-    padding: 8px 12px;
-    border-radius: 6px;
+    padding: 8px 14px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 600;
   }
@@ -61,13 +66,10 @@
     opacity: 0.9;
   }
 
-  /* ===============================
-     TOAST / SNACKBAR
-  =============================== */
-
+  /* TOAST */
   #toast {
     position: fixed;
-    bottom: 20px;
+    bottom: 22px;
     left: 50%;
     transform: translateX(-50%);
     background: #1f2937;
@@ -99,23 +101,29 @@
 </nav>
 
 <div id="app"></div>
-
 <div id="toast"></div>
 
 <script>
+/* ======================================================
+   CONFIG — VERY IMPORTANT
+====================================================== */
+
+// CHANGE THIS if repo name changes
+const BASE_PATH = '/routing';
+
 /* ======================================================
    ROUTER CORE
 ====================================================== */
 
 function go(path) {
-  history.pushState({}, '', path);
+  history.pushState({}, '', BASE_PATH + path);
   render();
 }
 
 window.addEventListener('popstate', render);
 
 /* ======================================================
-   MOCK DATA
+   DATA (mock, for testing richness)
 ====================================================== */
 
 const posts = {
@@ -128,31 +136,28 @@ const groups = {
 };
 
 /* ======================================================
-   TOAST SYSTEM (NON-BLOCKING)
+   TOAST SYSTEM
 ====================================================== */
 
 let toastTimer = null;
 
-function showToast(message) {
-  const toast = document.getElementById('toast');
-  toast.textContent = message;
-  toast.classList.add('show');
-
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    toast.classList.remove('show');
-  }, 2200);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
 /* ======================================================
-   SHARE LINK LOGIC
+   SHARE LOGIC (BASE-AWARE)
 ====================================================== */
 
 function share(path) {
-  const url = location.origin + path;
+  const url = location.origin + BASE_PATH + path;
   navigator.clipboard.writeText(url)
-    .then(() => showToast("Link copied to clipboard"))
-    .catch(() => showToast("Failed to copy link"));
+    .then(() => showToast('Link copied'))
+    .catch(() => showToast('Copy failed'));
 }
 
 /* ======================================================
@@ -163,10 +168,11 @@ function Home() {
   return `
     <div class="card">
       <h2>Home</h2>
-      <p>Pure frontend SPA with shareable links.</p>
-      <p>Try opening:</p>
-      <code>/post/abc123</code><br>
-      <code>/group/devs</code>
+      <p>This SPA is running correctly.</p>
+      <div class="meta">
+        Base path: <code>${BASE_PATH}</code><br>
+        Current URL: <code>${location.pathname}</code>
+      </div>
     </div>
   `;
 }
@@ -186,27 +192,27 @@ function Feed() {
 }
 
 function PostView(id) {
-  const post = posts[id];
-  if (!post) return NotFound();
+  const p = posts[id];
+  if (!p) return NotFound();
 
   return `
     <div class="card">
-      <h2>${post.title}</h2>
-      <p>${post.body}</p>
-      <small>Post ID: ${id}</small><br><br>
+      <h2>${p.title}</h2>
+      <p>${p.body}</p>
+      <div class="meta">Post ID: ${id}</div><br>
       <button onclick="share('/post/${id}')">Share Post</button>
     </div>
   `;
 }
 
 function GroupView(name) {
-  const group = groups[name];
-  if (!group) return NotFound();
+  const g = groups[name];
+  if (!g) return NotFound();
 
   return `
     <div class="card">
-      <h2>Group: ${group.name}</h2>
-      <p>Members: ${group.members}</p>
+      <h2>Group: ${g.name}</h2>
+      <p>Members: ${g.members}</p>
       <button onclick="go('/group/${name}/join')">Join</button>
       <button class="secondary" onclick="share('/group/${name}')">Share</button>
     </div>
@@ -217,7 +223,7 @@ function JoinGroup(name) {
   return `
     <div class="card">
       <h2>Joined ${name}</h2>
-      <p>You joined this group (frontend demo).</p>
+      <p>This is a route-based action layer.</p>
       <button onclick="go('/group/${name}')">Back</button>
     </div>
   `;
@@ -227,7 +233,7 @@ function Profile(name) {
   return `
     <div class="card">
       <h2>Profile: ${name}</h2>
-      <p>This profile is directly linkable.</p>
+      <p>This page is fully addressable.</p>
       <button onclick="share('/profile/${name}')">Share Profile</button>
     </div>
   `;
@@ -237,34 +243,41 @@ function NotFound() {
   return `
     <div class="card">
       <h2>404</h2>
-      <p>Route not found.</p>
+      <p>This route doesn’t exist.</p>
+      <a style="color:#5ea2ff;text-decoration:underline;cursor:pointer"
+         onclick="go('/')">Go back home</a>
     </div>
   `;
 }
 
 /* ======================================================
-   ROUTE MATCHER
+   ROUTE MATCHER (BASE-AWARE)
 ====================================================== */
 
 function render() {
   const app = document.getElementById('app');
-  const path = location.pathname.split('/').filter(Boolean);
+
+  // Remove base path before routing
+  const cleanPath = location.pathname
+    .replace(BASE_PATH, '')
+    .split('/')
+    .filter(Boolean);
 
   let html;
 
-  if (path.length === 0) html = Home();
-  else if (path[0] === 'feed') html = Feed();
-  else if (path[0] === 'post') html = PostView(path[1]);
-  else if (path[0] === 'group' && path[2] === 'join') html = JoinGroup(path[1]);
-  else if (path[0] === 'group') html = GroupView(path[1]);
-  else if (path[0] === 'profile') html = Profile(path[1]);
+  if (cleanPath.length === 0) html = Home();
+  else if (cleanPath[0] === 'feed') html = Feed();
+  else if (cleanPath[0] === 'post') html = PostView(cleanPath[1]);
+  else if (cleanPath[0] === 'group' && cleanPath[2] === 'join') html = JoinGroup(cleanPath[1]);
+  else if (cleanPath[0] === 'group') html = GroupView(cleanPath[1]);
+  else if (cleanPath[0] === 'profile') html = Profile(cleanPath[1]);
   else html = NotFound();
 
   app.innerHTML = html;
 }
 
 /* ======================================================
-   GITHUB PAGES REFRESH FIX
+   SPA REDIRECT RESTORE (from 404.html)
 ====================================================== */
 
 const redirect = sessionStorage.redirect;
