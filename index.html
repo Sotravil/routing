@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SPA Shareable Routing Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: #0f1115;
+    color: #eaeaea;
+  }
+
+  nav {
+    display: flex;
+    gap: 14px;
+    padding: 14px;
+    background: #161a22;
+    border-bottom: 1px solid #222;
+  }
+
+  nav a {
+    color: #8ab4ff;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  nav a:hover {
+    text-decoration: underline;
+  }
+
+  #app {
+    padding: 20px;
+  }
+
+  .card {
+    background: #161a22;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+  }
+
+  button {
+    background: #8ab4ff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+
+  button.secondary {
+    background: #2a2f3a;
+    color: #ddd;
+  }
+
+  button:hover {
+    opacity: 0.9;
+  }
+
+  /* ===============================
+     TOAST / SNACKBAR
+  =============================== */
+
+  #toast {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1f2937;
+    color: #eaeaea;
+    padding: 12px 16px;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    font-weight: 500;
+    z-index: 9999;
+  }
+
+  #toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-6px);
+  }
+</style>
+</head>
+
+<body>
+
+<nav>
+  <a onclick="go('/')">Home</a>
+  <a onclick="go('/feed')">Feed</a>
+  <a onclick="go('/group/devs')">Group</a>
+  <a onclick="go('/profile/sotravil')">Profile</a>
+</nav>
+
+<div id="app"></div>
+
+<div id="toast"></div>
+
+<script>
+/* ======================================================
+   ROUTER CORE
+====================================================== */
+
+function go(path) {
+  history.pushState({}, '', path);
+  render();
+}
+
+window.addEventListener('popstate', render);
+
+/* ======================================================
+   MOCK DATA
+====================================================== */
+
+const posts = {
+  abc123: { title: "Hello World", body: "This post is addressable by URL." },
+  xyz789: { title: "Pure SPA Routing", body: "Share links work without backend." }
+};
+
+const groups = {
+  devs: { name: "Developers", members: 42 }
+};
+
+/* ======================================================
+   TOAST SYSTEM (NON-BLOCKING)
+====================================================== */
+
+let toastTimer = null;
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    toast.classList.remove('show');
+  }, 2200);
+}
+
+/* ======================================================
+   SHARE LINK LOGIC
+====================================================== */
+
+function share(path) {
+  const url = location.origin + path;
+  navigator.clipboard.writeText(url)
+    .then(() => showToast("Link copied to clipboard"))
+    .catch(() => showToast("Failed to copy link"));
+}
+
+/* ======================================================
+   VIEWS
+====================================================== */
+
+function Home() {
+  return `
+    <div class="card">
+      <h2>Home</h2>
+      <p>Pure frontend SPA with shareable links.</p>
+      <p>Try opening:</p>
+      <code>/post/abc123</code><br>
+      <code>/group/devs</code>
+    </div>
+  `;
+}
+
+function Feed() {
+  return `
+    <h2>Feed</h2>
+    ${Object.entries(posts).map(([id, p]) => `
+      <div class="card">
+        <h3>${p.title}</h3>
+        <p>${p.body}</p>
+        <button onclick="go('/post/${id}')">Open</button>
+        <button class="secondary" onclick="share('/post/${id}')">Share</button>
+      </div>
+    `).join('')}
+  `;
+}
+
+function PostView(id) {
+  const post = posts[id];
+  if (!post) return NotFound();
+
+  return `
+    <div class="card">
+      <h2>${post.title}</h2>
+      <p>${post.body}</p>
+      <small>Post ID: ${id}</small><br><br>
+      <button onclick="share('/post/${id}')">Share Post</button>
+    </div>
+  `;
+}
+
+function GroupView(name) {
+  const group = groups[name];
+  if (!group) return NotFound();
+
+  return `
+    <div class="card">
+      <h2>Group: ${group.name}</h2>
+      <p>Members: ${group.members}</p>
+      <button onclick="go('/group/${name}/join')">Join</button>
+      <button class="secondary" onclick="share('/group/${name}')">Share</button>
+    </div>
+  `;
+}
+
+function JoinGroup(name) {
+  return `
+    <div class="card">
+      <h2>Joined ${name}</h2>
+      <p>You joined this group (frontend demo).</p>
+      <button onclick="go('/group/${name}')">Back</button>
+    </div>
+  `;
+}
+
+function Profile(name) {
+  return `
+    <div class="card">
+      <h2>Profile: ${name}</h2>
+      <p>This profile is directly linkable.</p>
+      <button onclick="share('/profile/${name}')">Share Profile</button>
+    </div>
+  `;
+}
+
+function NotFound() {
+  return `
+    <div class="card">
+      <h2>404</h2>
+      <p>Route not found.</p>
+    </div>
+  `;
+}
+
+/* ======================================================
+   ROUTE MATCHER
+====================================================== */
+
+function render() {
+  const app = document.getElementById('app');
+  const path = location.pathname.split('/').filter(Boolean);
+
+  let html;
+
+  if (path.length === 0) html = Home();
+  else if (path[0] === 'feed') html = Feed();
+  else if (path[0] === 'post') html = PostView(path[1]);
+  else if (path[0] === 'group' && path[2] === 'join') html = JoinGroup(path[1]);
+  else if (path[0] === 'group') html = GroupView(path[1]);
+  else if (path[0] === 'profile') html = Profile(path[1]);
+  else html = NotFound();
+
+  app.innerHTML = html;
+}
+
+/* ======================================================
+   GITHUB PAGES REFRESH FIX
+====================================================== */
+
+const redirect = sessionStorage.redirect;
+if (redirect) {
+  history.replaceState({}, '', redirect);
+  sessionStorage.removeItem('redirect');
+}
+
+/* ======================================================
+   INIT
+====================================================== */
+
+render();
+</script>
+
+</body>
+</html>
