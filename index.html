@@ -674,7 +674,121 @@ function NotFound() {
     </div>
   `;
 }
+function Breadcrumbs(items) {
+  if (!items || items.length === 0) return '';
+  return `
+    <div class="breadcrumbs">
+      ${items.map((item, i) => 
+        i < items.length - 1 
+          ? `<a onclick="go('${item.path}')">${item.label}</a><span>/</span>`
+          : `<span>${item.label}</span>`
+      ).join('')}
+    </div>
+  `;
+}
 
+function SearchView() {
+  const query = getQueryParam('q', '');
+  const results = [];
+  
+  if (query) {
+    const q = query.toLowerCase();
+    Object.values(posts).forEach(p => {
+      if (p.title.toLowerCase().includes(q) || p.body.toLowerCase().includes(q)) {
+        results.push({type: 'post', data: p});
+      }
+    });
+    Object.entries(groups).forEach(([key, g]) => {
+      if (g.name.toLowerCase().includes(q) || (g.description && g.description.toLowerCase().includes(q))) {
+        results.push({type: 'group', key, data: g});
+      }
+    });
+  }
+  
+  return `
+    <div class="card">
+      <h2>🔍 Search</h2>
+      <form onsubmit="event.preventDefault(); updateQueryParam('q', this.q.value);">
+        <input type="text" name="q" value="${query}" placeholder="Search posts, groups..." autofocus style="width:100%;margin-bottom:12px;">
+        <button type="submit">Search</button>
+      </form>
+    </div>
+    ${query ? `
+      <div class="card"><h3>Results for "${query}" (${results.length})</h3></div>
+      ${results.length === 0 ? '<div class="card"><p>No results found.</p></div>' : results.map(r => {
+        if (r.type === 'post') {
+          return `<div class="card"><h3>📄 ${r.data.title}</h3><p>${r.data.body.substring(0, 150)}</p><button onclick="go('/post/${r.data.id}')">View Post</button></div>`;
+        } else {
+          return `<div class="card"><h3>👥 ${r.data.name}</h3><p>${r.data.description || ''}</p><button onclick="go('/group/${r.key}')">View Group</button></div>`;
+        }
+      }).join('')}
+    ` : ''}
+  `;
+}
+
+function Login() {
+  if (currentUser) { go('/'); return ''; }
+  const redirect = getQueryParam('redirect', '/');
+  return `
+    <div class="card">
+      <h2>🔐 Login</h2>
+      <p>Enter any username to simulate login.</p>
+      <form onsubmit="handleLogin(event)">
+        <label>Username</label>
+        <input type="text" name="username" required placeholder="Enter username" autofocus>
+        <input type="hidden" name="redirect" value="${redirect}">
+        <div class="flex">
+          <button type="submit">Login</button>
+          <button type="button" class="secondary" onclick="go('/')">Cancel</button>
+        </div>
+      </form>
+      <div class="meta" style="margin-top: 16px;">Try: <code>admin</code>, <code>sotravil</code>, or any username</div>
+    </div>
+  `;
+}
+
+function Settings() {
+  if (!requireAuth()) return '';
+  return `
+    <div class="card">
+      <h2>⚙️ Settings</h2>
+      <p>Protected route - only accessible when logged in.</p>
+      <div style="margin-top: 20px;">
+        <h3>Account</h3>
+        <div class="meta">Username: <code>${currentUser}</code><br>Your posts: <code>${Object.values(posts).filter(p => p.author === currentUser).length}</code></div>
+        <h3 style="margin-top: 24px;">Data Management</h3>
+        <div class="flex">
+          <button class="secondary" onclick="exportData()">Export Data</button>
+          <button class="danger" onclick="if(confirm('Clear all data?')){localStorage.clear();location.reload();}">Reset Everything</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function PostForm(editId = null) {
+  if (!requireAuth()) return '';
+  const post = editId ? posts[editId] : null;
+  const isEdit = !!post;
+  if (isEdit && post.author !== currentUser) { showToast('You can only edit your own posts'); go('/feed'); return ''; }
+  return `
+    <div class="card">
+      <h2>${isEdit ? 'Edit Post' : 'Create New Post'}</h2>
+      <form onsubmit="handlePostSubmit(event, ${isEdit ? "'" + editId + "'" : 'null'})">
+        <label>Title *</label>
+        <input type="text" name="title" required value="${post ? post.title : ''}" placeholder="Enter post title">
+        <label>Body *</label>
+        <textarea name="body" required rows="5" placeholder="Enter post content">${post ? post.body : ''}</textarea>
+        <label>Tags (comma-separated)</label>
+        <input type="text" name="tags" value="${post && post.tags ? post.tags.join(', ') : ''}" placeholder="e.g., javascript, tutorial">
+        <div class="flex">
+          <button type="submit">${isEdit ? 'Update' : 'Create'} Post</button>
+          <button type="button" class="secondary" onclick="go(${isEdit ? "'/post/" + editId + "'" : "'/feed'"})">Cancel</button>
+        </div>
+      </form>
+    </div>
+  `;
+}
 /* ======================================================
    EVENT HANDLERS
 ====================================================== */
